@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// REHEARSAL VARIANT (tamper/): the fetch of /.well-known/issuer-history.json is replaced by a file read,
+// so a rotated document can be exercised offline. Usage from the repo root:
+//   node tamper/issuer-rehearsal.mjs tamper/rotated-history.json ; echo "exit=$?"
 // Second half of the c94614 re-run: the issuer-history document the receipt pins.
 // The receipt's SIGNED payload carries issuer_history {hash, version, seq}; this script fetches
 // https://api.chit402.com/.well-known/issuer-history.json, recomputes the entry chain the document's
@@ -8,7 +11,8 @@ import { createHash, createPublicKey, verify as cryptoVerify } from "node:crypto
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const HERE = path.dirname(new URL(import.meta.url).pathname);
+// HERE is the repository root (this file lives in tamper/), so the script reads ./chit/.
+const HERE = path.join(path.dirname(new URL(import.meta.url).pathname), "..");
 const API = "https://api.chit402.com";
 const sha256 = (b) => createHash("sha256").update(b).digest("hex");
 const b64u = (s) => Buffer.from(s, "base64url");

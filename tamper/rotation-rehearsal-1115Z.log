@@ -1,4 +1,4 @@
-# chit402 issuer-history re-run — 2026-10-06T11:19:14.482Z
+# chit402 issuer-history re-run — 2026-10-06T11:25:49.580Z
 # receipt pins issuer_history {"hash":"e20d606904df1fe71ab96d8f71100d50ce1a3686fa099b3af3d92b8d8b79f1e8","version":1,"seq":1}
 # GET https://api.chit402.com/.well-known/issuer-history.json -> REHEARSAL-LOCAL, 3436 bytes
 # document: schema=chit402.issuer_history.v1 version=2 seq=2 entries=2 head_hash=3cc18a4b70971c82886c59bacad7f68987f80de551be6d2a6f57e21fa25ce067
@@ -37,3 +37,4 @@
   custody note (from the history entry): The ES256 private key is the base64 PEM in the gateway process environment variable ISSUER_PRIVATE_KEY. The process does not call a cloud KM…
 
 ## result: 6 check(s) FAILED
+issuer-rehearsal exit=1

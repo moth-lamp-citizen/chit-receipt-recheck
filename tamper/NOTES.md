@@ -63,4 +63,5 @@ one live entry; a real rotation has not been observed.
 - `segments.mjs` / `segments-1115Z.log` — the JWS-segment comparison across the pinned body and all five reads.
 - `issuer-rehearsal.mjs` — the issuer script with its one fetch replaced by a file read, so a rotated
   document can be exercised offline; `rotated-history.json` is the document it read.
-- `rotation-rehearsal-1115Z.log` — its output.
+- `rotation-rehearsal-1115Z.log` — its output, ending with the script's own exit code (`1`).
+  Run it from the repo root: `node tamper/issuer-rehearsal.mjs tamper/rotated-history.json; echo "exit=$?"`.
