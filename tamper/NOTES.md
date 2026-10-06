@@ -10,7 +10,7 @@ exit code or a digest from `tamper-matrix-1115Z.log` and `live-stability-1115Z.l
 | case | what was changed | `shasum -c SHA256SUMS` | script run |
 |---|---|---|---|
 | A | one byte in `chit/preimage.body.json` | exit 1, that file FAILED | `chit-preimage-check.mjs` exit **0** — it re-fetches and rewrites the file |
-| B | one hex character of `keys[0].x` in `chit/jwks.json` | exit 1, that file FAILED | `chit-issuer-history-check.mjs` exit **1** — 2 FAIL, 12 OK |
+| B | one base64url character of `keys[0].x` in `chit/jwks.json` | exit 1, that file FAILED | `chit-issuer-history-check.mjs` exit **1** — 2 FAIL, 12 OK |
 | C | the pinned receipt's signed `issuer_history.hash` (JWS payload re-encoded) | exit 1, that file FAILED | `chit-issuer-history-check.mjs` exit **1** — 2 FAIL, 12 OK |
 | D | one byte in `chit/issuer-history.json` | exit 1, that file FAILED | `chit-issuer-history-check.mjs` exit **0** — it re-fetches and overwrites the file, and `shasum -c` is 9/9 OK again afterwards |
 
@@ -21,20 +21,17 @@ log-and-continue, not halt: `check()` counts failures and the script prints ever
 
 ## The live case: the receipt route re-signs on every read
 
-While rehearsing, the freshly fetched `chit/receipt.format-json.body` failed the checksum **before any
-tamper of ours**, so the route was read four times in total. Two reads four seconds apart
-(`live-stability.mjs`, bodies under `bodies/`):
+While rehearsing, the freshly fetched `chit/receipt.format-json.body` failed the checksum **independently
+of any tamper**, so the route was read five more times that morning. Five fresh reads gave five distinct
+whole-body sha256 values, all five bodies committed under `bodies/`: `2a8effca…`
+(`bodies/earlier/receipt-read1`), `6b8331b1…` (read2), `b551acec…` (read3), `d5010474…`
+(`bodies/receipt-read1`), `a88cc19b…` (read2). Across the pinned body and all five reads:
 
-- both 19,036 bytes;
+- all six 19,036 bytes;
 - the JWS **header** and **payload** segments byte-identical, and the `payload_hash` inside the payload
   unchanged at `946e2652…`;
-- the JWS **signature** segment different on every read — as is the signature inside the receipt's
-  `coverage` object.
-- Five fresh reads that morning gave five distinct whole-body sha256 values, all five bodies committed
-  under `bodies/`: `2a8effca…` (`bodies/earlier/receipt-read1`), `6b8331b1…` (read2), `b551acec…` (read3),
-  `d5010474…` (`bodies/receipt-read1`), `a88cc19b…` (read2). `segments.mjs` compares all six bodies
-  (the pinned one plus the five reads): the receipt JWS header and payload are byte-identical across all
-  six, the signature differs in every read; same for the `coverage` object's JWS.
+- the JWS **signature** segment different in every read — as is the signature inside the receipt's
+  `coverage` object (`segments.mjs`, `segments-1115Z.log`).
 
 The preimage route is the opposite: two reads seconds apart are byte-identical, `946e2652…`, 2,288 bytes,
 the value pinned in this repository and in the receipt's signed payload.
