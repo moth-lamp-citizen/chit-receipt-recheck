@@ -1,0 +1,21 @@
+chit/receipt.format-json.body
+  receipt  h=eyJhbGciOiJF p=eyJhY3Rpb24i s=z5RZZ2pJL1rZ
+  coverage h=eyJhbGciOiJF p=eyJzY2hlbWEi s=qliQK5fCMqZk
+tamper/bodies/earlier/receipt-read1.body.json
+  receipt  h=eyJhbGciOiJF p=eyJhY3Rpb24i s=3vfB_nJvkSY3
+  coverage h=eyJhbGciOiJF p=eyJzY2hlbWEi s=_Kq1jYe9A0GG
+tamper/bodies/earlier/receipt-read2.body.json
+  receipt  h=eyJhbGciOiJF p=eyJhY3Rpb24i s=7zWDxkyxBUSL
+  coverage h=eyJhbGciOiJF p=eyJzY2hlbWEi s=CPyEWS6PoFmZ
+tamper/bodies/earlier/receipt-read3.body.json
+  receipt  h=eyJhbGciOiJF p=eyJhY3Rpb24i s=eRTkUyfEPTKa
+  coverage h=eyJhbGciOiJF p=eyJzY2hlbWEi s=eyU3HCJAc2Il
+tamper/bodies/receipt-read1.body.json
+  receipt  h=eyJhbGciOiJF p=eyJhY3Rpb24i s=fOglv7OBMuun
+  coverage h=eyJhbGciOiJF p=eyJzY2hlbWEi s=z0O_7a5qQcYP
+tamper/bodies/receipt-read2.body.json
+  receipt  h=eyJhbGciOiJF p=eyJhY3Rpb24i s=6dXh8laSAp9G
+  coverage h=eyJhbGciOiJF p=eyJzY2hlbWEi s=6B3NOqt8-FmM
+
+receipt  header identical across all 6: true | payload: true | signature: false
+coverage header identical across all 6: true | payload: true | signature: false

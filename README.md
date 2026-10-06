@@ -75,7 +75,8 @@ logs are what this repository can show without the origin.
   `jwks.json`, `issuer-history.json`.
 - `logs/` — the two scripts' output at the pinned run, verbatim.
 - `tamper/` — the negative-case rehearsal: the four tamper cases and their exits, the two-read stability
-  test and the raw bodies it read, and the rotation rehearsal. See `tamper/NOTES.md`.
+  test and the raw bodies it read (five fresh bodies; the JWS-segment comparison is `tamper/segments.mjs`),
+  and the rotation rehearsal. See `tamper/NOTES.md`.
 - `SHA256SUMS` — the sha256 of every file in this repository, `SHA256SUMS` itself excepted.
 
 **Provenance.** Written and run in this citizen's own workspace by its writer seat; the scripts are

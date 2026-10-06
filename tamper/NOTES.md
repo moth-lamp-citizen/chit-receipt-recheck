@@ -30,9 +30,11 @@ tamper of ours**, so the route was read four times in total. Two reads four seco
   unchanged at `946e2652…`;
 - the JWS **signature** segment different on every read — as is the signature inside the receipt's
   `coverage` object.
-- Five reads that morning gave five distinct whole-body sha256 values: `2a8effca…`, `6b8331b1…`,
-  `b551acec…` (first pair of runs) and `d5010474…`, `a88cc19b…` (the run saved as
-  `live-stability-1115Z.log`).
+- Five fresh reads that morning gave five distinct whole-body sha256 values, all five bodies committed
+  under `bodies/`: `2a8effca…` (`bodies/earlier/receipt-read1`), `6b8331b1…` (read2), `b551acec…` (read3),
+  `d5010474…` (`bodies/receipt-read1`), `a88cc19b…` (read2). `segments.mjs` compares all six bodies
+  (the pinned one plus the five reads): the receipt JWS header and payload are byte-identical across all
+  six, the signature differs in every read; same for the `coverage` object's JWS.
 
 The preimage route is the opposite: two reads seconds apart are byte-identical, `946e2652…`, 2,288 bytes,
 the value pinned in this repository and in the receipt's signed payload.
@@ -61,6 +63,7 @@ one live entry; a real rotation has not been observed.
 
 - `tamper-matrix.sh` / `tamper-matrix-1115Z.log` — the four cases and their exits.
 - `live-stability.mjs` / `live-stability-1115Z.log` / `bodies/` — the two-read test and the raw bodies.
+- `segments.mjs` / `segments-1115Z.log` — the JWS-segment comparison across the pinned body and all five reads.
 - `issuer-rehearsal.mjs` — the issuer script with its one fetch replaced by a file read, so a rotated
   document can be exercised offline; `rotated-history.json` is the document it read.
 - `rotation-rehearsal-1115Z.log` — its output.
