@@ -1,0 +1,59 @@
+# chit402 preimage / issuer-signature re-run — 2026-10-06T02:04:05.265Z
+# receipt chit-66ca86e4-601a-4c44-92c7-4cfb9213fcd6
+# every request below is an unauthenticated public GET; nothing is signed, sent or stored upstream
+
+## 1. GET /receipt/<id>/preimage
+  status 200; 2288 bytes; content-type application/json; charset=utf-8
+  headers: x-chit-hash-alg=sha256 x-chit-canonicalization=jcs-rfc8785 x-chit-payload-hash=946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+  OK   sha256(bytes as received) == chit402's claimed value — 946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+  OK   served body is already the sorted-key JCS form (bytes) — 2288 recomputed vs 2288 served
+  OK   sha256(sorted-key re-serialization) == claimed — 946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+  OK   two reads seconds apart serve identical bytes — etag W/"8f0-SVnahCRPIKI81p0ptQCAyz4A4zU" / W/"8f0-SVnahCRPIKI81p0ptQCAyz4A4zU"
+
+## 2. GET /receipt/<id>?format=json
+  status 200; 19036 chars; alg=ES256 kid=IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q hash_alg=sha256
+  issuer_signature.payload_hash=946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+  OK   envelope payload_hash == claimed — 946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+  OK   envelope payload_hash == sha256(preimage bytes)
+  JWS header: {"alg":"ES256","typ":"chit402-receipt+jwt","kid":"IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q","jku":"https://api.chit402.com/.well-known/jwks.json"}
+  JWS payload fields: 29 keys; payload_hash=946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+  OK   payload_hash INSIDE the signed JWS == claimed — 946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+  OK   JWS header alg is ES256 — ES256
+  OK   JWS header kid == envelope kid
+  signed payload carries hash_alg: false
+  signed payload carries canonicalization: false
+  signed payload carries payload_hash: true = "946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd"
+  signed payload carries issuer_history: true = {"hash":"e20d606904df1fe71ab96d8f71100d50ce1a3686fa099b3af3d92b8d8b79f1e8","version":1,"seq":1}
+  signed payload carries payload_version: true = 10
+  signed payload carries task_id: true = "xfuel-66ca86e4-601a-4c44-92c7-4cfb9213fcd6"
+  NOTE (finding, not a failure of chit402's claim) the signed payload names the hash algorithm: false
+
+## 3. ES256 verification
+  embedded issuer_jwk: EC/P-256 kid=IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q
+  OK   signature verifies against the key EMBEDDED IN THE RECEIPT
+  live JWKS (200): 1 key(s); picked kid=IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q
+  OK   signature verifies against the key from the LIVE JWKS
+  OK   live JWKS key == key embedded in the receipt (x, y, crv)
+  verification.jwks_uri (envelope, unsigned) = https://api.chit402.com/.well-known/jwks.json
+  verification.issuer_jwk_pin (envelope, unsigned) = IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q
+  OK   envelope pin == kid
+
+## 4. envelope canonical_preimage
+  OK   envelope canonical_preimage bytes == GET /preimage body — 2288 vs 2288
+  OK   sha256(canonical_preimage) == signed payload_hash
+  OK   canonical_preimage is NOT itself a signed field
+
+## 5. locators
+  preimages.links.preimage (envelope) = https://api.chit402.com/receipt/xfuel-66ca86e4-601a-4c44-92c7-4cfb9213fcd6/preimage
+  preimages.canonical.rule = SHA-256 of the stored UTF-8 JCS bytes. payload_hash inside the JWS is that digest. The GET /preimage body is those bytes.
+  OK   the xfuel- spelling of the id also serves the preimage — status 200, 2288 bytes
+  OK   the signed payload carries task_id (the locator's key) — xfuel-66ca86e4-601a-4c44-92c7-4cfb9213fcd6
+
+## 6. issuer history (the 'pinned at version 1, seq 1' half)
+  issuer_history INSIDE the signed payload = {"hash":"e20d606904df1fe71ab96d8f71100d50ce1a3686fa099b3af3d92b8d8b79f1e8","version":1,"seq":1}
+  OK   issuer_history is inside the signed payload
+  probe /.well-known/issuer-history.json -> 200 application/json; charset=utf-8
+  probe /issuer-history -> 404 application/json; charset=utf-8
+  probe /.well-known/chit402-issuer-history.json -> 404 application/json; charset=utf-8
+
+## result: every check passed
