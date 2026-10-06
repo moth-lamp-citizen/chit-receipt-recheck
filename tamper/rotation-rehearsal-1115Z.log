@@ -1,0 +1,39 @@
+# chit402 issuer-history re-run — 2026-10-06T11:19:14.482Z
+# receipt pins issuer_history {"hash":"e20d606904df1fe71ab96d8f71100d50ce1a3686fa099b3af3d92b8d8b79f1e8","version":1,"seq":1}
+# GET https://api.chit402.com/.well-known/issuer-history.json -> REHEARSAL-LOCAL, 3436 bytes
+# document: schema=chit402.issuer_history.v1 version=2 seq=2 entries=2 head_hash=3cc18a4b70971c82886c59bacad7f68987f80de551be6d2a6f57e21fa25ce067
+
+## 1. snapshot hash
+  sha256(bytes as served)        = 556d8db3ec6d92d5ff23f69a2acb522fb05cdd971f7c943db0f48f836187bd18
+  sha256(JCS re-serialization)   = 556d8db3ec6d92d5ff23f69a2acb522fb05cdd971f7c943db0f48f836187bd18
+  pinned inside the signed receipt = e20d606904df1fe71ab96d8f71100d50ce1a3686fa099b3af3d92b8d8b79f1e8
+  FAIL served bytes hash to the pinned value
+  FAIL the pinned value is also the JCS hash (i.e. served bytes are JCS) — the two agree
+  OK   every object in the served document has its keys in sorted order
+
+## 2. entry chain (rule: SHA-256 of the JCS UTF-8 bytes of the entry without entry_hash)
+  entry[0] kid=IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q status=active not_before=2026-09-04T08:52:05Z
+  OK   entry[0] entry_hash recomputes from the entry without entry_hash
+  OK   entry[0] prev_hash links to the previous entry — prev_hash=null expected null
+  entry[1] kid=IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1R status=active not_before=2026-10-06T00:00:00Z
+  OK   entry[1] entry_hash recomputes from the entry without entry_hash
+  OK   entry[1] prev_hash links to the previous entry — prev_hash=3d8259fb043f8ac80c924ea89d508f0a898f70bd0335658ef47370d5757e27a6 expected 3d8259fb043f8ac80c924ea89d508f0a898f70bd0335658ef47370d5757e27a6
+  OK   head_hash == last entry_hash — 3cc18a4b70971c82886c59bacad7f68987f80de551be6d2a6f57e21fa25ce067 vs 3cc18a4b70971c82886c59bacad7f68987f80de551be6d2a6f57e21fa25ce067
+  FAIL document seq/version == the values the receipt pinned — 2/2 vs 1/1
+  OK   entry kid == the receipt's signing kid
+
+## 3. document signature
+  header {"alg":"ES256","typ":"chit402-issuer-history+jwt","kid":"IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q"}
+  signed payload = {"schema":"chit402.issuer_history.v1","payload_version":1,"entry_count":1,"head_hash":"3d8259fb043f8ac80c924ea89d508f0a898f70bd0335658ef47370d5757e27a6","version":1,"seq":1}
+  OK   document JWS verifies against its own embedded key
+  FAIL signed payload names head_hash — 3d8259fb043f8ac80c924ea89d508f0a898f70bd0335658ef47370d5757e27a6
+  FAIL signed payload names entry_count — 1 vs 2
+  FAIL signed payload names version and seq (the sealed-snapshot fields) — 1/1
+
+## 4. key identity
+  OK   JWKS key == receipt-embedded key
+  OK   JWKS key == history entry key
+  kid in all three: IvFpmC-vPhkY_v0vidsrWVT9uzlE5XWKZgAEOeJTq1Q
+  custody note (from the history entry): The ES256 private key is the base64 PEM in the gateway process environment variable ISSUER_PRIVATE_KEY. The process does not call a cloud KM…
+
+## result: 6 check(s) FAILED

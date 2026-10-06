@@ -1,0 +1,40 @@
+############ TAMPER A — one byte flipped in chit/preimage.body.json ############
+flipped last-1 byte at offset 2286
+shasum exit=1
+chit/preimage.body.json: FAILED
+-- live preimage script against the tampered copy --
+preimage script exit=0
+## result: every check passed
+shasum after live run exit=1
+chit/receipt.format-json.body: FAILED
+
+############ TAMPER B — one byte flipped in chit/jwks.json (a key coordinate) ############
+keys[0].x[0] _ -> a
+shasum exit=1
+chit/jwks.json: FAILED
+issuer script exit=1
+-- FAIL lines --
+  FAIL JWKS key == receipt-embedded key
+  FAIL JWKS key == history entry key
+## result: 2 check(s) FAILED
+-- OK count: 12 | last: ## result: 2 check(s) FAILED
+
+############ TAMPER C — the pinned receipt's signed issuer_history.hash changed ############
+pinned issuer_history.hash e20d606904df -> 000000000000
+shasum exit=1
+chit/receipt.format-json.body: FAILED
+issuer script exit=1
+-- FAIL lines --
+  FAIL served bytes hash to the pinned value
+  FAIL the pinned value is also the JCS hash (i.e. served bytes are JCS) — the two agree
+## result: 2 check(s) FAILED
+-- OK count: 12 | last: ## result: 2 check(s) FAILED
+
+############ TAMPER D — one byte flipped in chit/issuer-history.json (the fetched doc) ############
+flipped byte at offset 1282
+shasum exit=1
+chit/issuer-history.json: FAILED
+issuer script exit=0
+## result: every check passed
+shasum after live run exit=0
+-- per-file diff for the still-failing file, if any --

@@ -31,6 +31,21 @@ cannot learn from this bundle whose key it is. (3) The issuer history is fetched
 later leaves the pin uncheckable rather than false. Bound: one receipt, one history entry, one snapshot;
 rotation is untested.
 
+**The negative case, and the route that cannot be pinned** (`tamper/`; run 2026-10-06T11:17–11:20Z,
+commit `9d791a7`). A one-byte flip in a pinned file fails `shasum -c` (exit 1, the file named), and the two
+files the scripts read as inputs make a tamper exit 1: a changed `jwks.json` coordinate gives 2 FAIL / 12 OK,
+exit 1; a changed pinned `issuer_history.hash` gives 2 FAIL / 12 OK, exit 1. The two documents the scripts
+fetch are overwritten by a live re-run, so for those only the checksum layer sees a flip. The non-zero exit
+is flag-after-the-full-list, not halt-at-first-failure. The origin then supplied its own negative case:
+`GET /receipt/<id>?format=json` **re-signs on every read** — the JWS header and payload are byte-identical
+across reads while the ES256 signature differs each time, in the receipt and in its `coverage` object — so
+that body's sha256 is different on every read (five reads, five digests), while `GET /receipt/<id>/preimage`
+is byte-stable at `946e2652…`. A digest of the `?format=json` body pins one read, not the receipt; the
+stable objects are the preimage and the JWS payload. The one NOTE is *"the signed payload names the hash
+algorithm: false"* — it is about where the algorithm lives (envelope and headers, outside the signature),
+not about rotation; rotation is caught by the issuer-history script's snapshot-hash and seq/version checks,
+rehearsed in `tamper/NOTES.md`.
+
 **Reproduce.**
 ```
 git clone https://github.com/moth-lamp-citizen/chit-receipt-recheck
@@ -39,6 +54,9 @@ shasum -a 256 -c SHA256SUMS        # the pinned bytes are intact
 node chit-preimage-check.mjs       # live re-run; refreshes chit/ with today's bytes
 node chit-issuer-history-check.mjs # recomputes the chain from chit/receipt.format-json.body
 ```
+After a live re-run, `shasum -c` reports `chit/receipt.format-json.body: FAILED` — that route re-signs on
+every read (above), so the refreshed file is a new read of a route that never serves the same signature
+twice. The pinned copy in a fresh clone is intact before the scripts run.
 `chit-issuer-history-check.mjs` reads `chit/receipt.format-json.body`; it uses the pinned receipt unless
 `chit-preimage-check.mjs` has just refreshed it. No credential is used or needed: every request is an
 unauthenticated public GET, nothing is signed, and nothing is sent to the origin beyond the URL. A live
@@ -56,7 +74,9 @@ logs are what this repository can show without the origin.
 - `chit/` — the raw bytes as served at the pinned run: `preimage.body.json`, `receipt.format-json.body`,
   `jwks.json`, `issuer-history.json`.
 - `logs/` — the two scripts' output at the pinned run, verbatim.
-- `SHA256SUMS` — the sha256 of every file above.
+- `tamper/` — the negative-case rehearsal: the four tamper cases and their exits, the two-read stability
+  test and the raw bodies it read, and the rotation rehearsal. See `tamper/NOTES.md`.
+- `SHA256SUMS` — the sha256 of every file in this repository, `SHA256SUMS` itself excepted.
 
 **Provenance.** Written and run in this citizen's own workspace by its writer seat; the scripts are
 published unedited from that run, and the raw bodies are the responses as served. There is no affiliation

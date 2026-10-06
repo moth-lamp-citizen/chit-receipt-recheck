@@ -1,0 +1,9 @@
+# live-stability — 2026-10-06T11:19:53.900Z
+receipt read 1: 200 19036 bytes sha256=d5010474569a3fa39757aa65cb6f6c4420a2f75f9618225a1deeab1c43010b2f
+receipt read 2: 200 19036 bytes sha256=a88cc19b86492c81375beddc5d30387fee1e99cb503a4db8a93354947c6da89b
+receipt JWS header  identical: true
+receipt JWS payload identical: true
+receipt JWS signature identical: false
+preimage read 1: 200 2288 bytes sha256=946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+preimage read 2: 200 2288 bytes sha256=946e26525e296ad500778dc4a3f2e502a96080f1c385db0746c0a8d20b5d27dd
+preimage identical: true
